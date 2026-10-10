@@ -1,0 +1,9 @@
+name = "abloom-ai-proxy"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+# Secrets (set with `npx wrangler secret put ANTHROPIC_API_KEY`):
+#   ANTHROPIC_API_KEY
+# Optional variable to change the model:
+# [vars]
+# CLAUDE_MODEL = "claude-sonnet-5-5"

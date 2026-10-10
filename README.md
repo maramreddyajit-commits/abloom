@@ -1,50 +1,71 @@
-# Welcome to your Expo app 👋
+# 🌱 Abloom
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**A gentle companion app for people with OCD — resist a compulsion, water your plant, watch it grow.**
 
-## Get started
+Abloom turns the hardest part of OCD recovery — *not* doing the compulsion — into something you can see. Every time you resist, you water a hand-drawn plant. Keep a daily streak and it grows from a seedling into full bloom; finish a tree and it joins your forest. No clipboards, no clinical language.
 
-1. Install dependencies
+<p align="center">
+  <img src="docs/screenshots/welcome.png" width="200" alt="Welcome screen" />
+  <img src="docs/screenshots/grow.png" width="200" alt="Grow screen with plant, streak and compulsions" />
+  <img src="docs/screenshots/journey.png" width="200" alt="Journey screen with calendar and insights" />
+  <img src="docs/screenshots/struggling.png" width="200" alt="I'm struggling support sheet" />
+</p>
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- **Track what your OCD looks like** — search 16 common compulsions across checking, contamination, reassurance-seeking, mental rituals, symmetry and avoidance, or add your own.
+- **Water your plant** — log each compulsion you resist. A daily streak grows the plant through five stages (Seedling → Tiny Sapling → Bigger Sapling → Young Tree → Full Bloom), with animations and haptic feedback.
+- **"I'm struggling" support** — when an urge hits: a paced breathing exercise, 5-4-3-2-1 grounding, and an urge timer to ride the wave out.
+- **Exposure practice (ERP)** — guided exposure and response prevention sessions: pick a trigger, rate anxiety before, during and after, and record whether the feared outcome happened.
+- **Journey** — a 35-day activity calendar, a breakdown of what you resist most, and a history of exposure sessions with before/after anxiety.
+- **AI companion** — a Claude-powered chat that helps you name compulsions and spot cognitive distortions (catastrophizing, thought-action fusion, intolerance of uncertainty…). It's deliberately designed to **never give reassurance**, since reassurance-seeking is itself a compulsion.
+- **Private by default** — all data stays on the device (AsyncStorage). No accounts.
 
-   ```bash
-   npx expo start
-   ```
+## Design decisions
 
-In the output, you'll find options to open the app in a
+- **Recovery-informed, not clinical.** Copy is warm and lowercase; encouragement focuses on tolerating discomfort rather than on the fear being "irrational", in line with how ERP works.
+- **The tracker shouldn't become a ritual.** After eight logs in one day, the app gently reminds the user that it's a tool, not a ritual, and that they don't need to track perfectly — so logging itself doesn't turn into a compulsion.
+- **No API keys in the app.** The AI companion calls a tiny serverless proxy (`server/ai-proxy`) that holds the key and enforces the system prompt and message limits, so the endpoint can't be reused as a general-purpose Claude proxy.
+- **Local-calendar dates.** Streaks are computed from the user's local date, so "today" doesn't roll over early in the evening for users west of UTC.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Tech stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| | |
+|---|---|
+| App | React Native 0.81 · Expo SDK 54 (New Architecture) · React 19 |
+| UI | React Native `Animated`, `expo-linear-gradient`, `expo-haptics`, Caveat & Coming Soon fonts, custom illustrated plant stages |
+| Storage | `@react-native-async-storage/async-storage` |
+| AI | Claude API via a Cloudflare Worker proxy |
+| Platforms | iOS, Android, Web |
 
-## Get a fresh project
-
-When you're ready, run:
+## Running it
 
 ```bash
-npm run reset-project
+npm install
+npx expo start        # then press i (iOS), a (Android) or w (web)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+The app works fully without the AI companion. To enable it:
 
-## Learn more
+1. Deploy the proxy:
+   ```bash
+   cd server/ai-proxy
+   npx wrangler secret put ANTHROPIC_API_KEY
+   npx wrangler deploy
+   ```
+2. Copy `.env.example` to `.env` and set `EXPO_PUBLIC_AI_PROXY_URL` to the deployed worker URL.
+3. Restart `npx expo start`.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+App.js                 font loading + app root
+src/AbloomApp.js       screens, components and app state
+assets/images/         hand-drawn plant stages and flower art
+server/ai-proxy/       Cloudflare Worker that proxies the AI companion
+docs/screenshots/      README images
+```
 
-## Join the community
+## A note on scope
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Abloom is a personal project and a support tool, not a medical device or a substitute for treatment. If OCD is affecting your life, an ERP-trained therapist is the gold standard — the [International OCD Foundation](https://iocdf.org/find-help/) has a directory.
