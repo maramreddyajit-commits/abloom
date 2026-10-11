@@ -2,36 +2,62 @@
   "expo": {
     "name": "Abloom",
     "slug": "abloom",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
-    "icon": "./assets/images/stage4.png",
+    "icon": "./assets/images/icon.png",
+    "scheme": "abloom",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": {
-      "backgroundColor": "#FFF8F0",
-      "resizeMode": "contain",
-      "image": "./assets/images/stage4.png"
-    },
+    "backgroundColor": "#FFF8F0",
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.abloom.app",
-      "buildNumber": "1"
+      "buildNumber": "2",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.abloom.app",
+      "versionCode": 2,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/stage4.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFF8F0"
       },
-      "package": "com.abloom.app"
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "POST_NOTIFICATIONS"
+      ]
     },
+    "web": {
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro",
+      "name": "Abloom",
+      "themeColor": "#3F7D48",
+      "backgroundColor": "#FFF8F0"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFF8F0"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#3F7D48"
+        }
+      ],
+      "expo-font"
+    ],
     "extra": {
       "eas": {
         "projectId": ""
       }
-    },
-    "web": {
-      "favicon": "./assets/images/stage4.png",
-      "bundler": "metro"
     }
   }
 }

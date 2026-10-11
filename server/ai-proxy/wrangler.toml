@@ -2,8 +2,36 @@ name = "abloom-ai-proxy"
 main = "worker.js"
 compatibility_date = "2026-10-01"
 
-# Secrets (set with `npx wrangler secret put ANTHROPIC_API_KEY`):
-#   ANTHROPIC_API_KEY
-# Optional variable to change the model:
-# [vars]
-# CLAUDE_MODEL = "claude-sonnet-5-5"
+# Secrets (set with `npx wrangler secret put <NAME>`):
+#   ANTHROPIC_API_KEY   required
+#   APP_TOKEN           optional; must match EXPO_PUBLIC_AI_APP_TOKEN in the app. Not truly secret
+#                       (it ships in the app), but it stops casual reuse of the endpoint.
+
+[vars]
+CLAUDE_MODEL = "claude-sonnet-5-5"
+# Backstop for your bill: max chat requests per day across all users. Needs the USAGE KV below.
+DAILY_REQUEST_CAP = "3000"
+
+# Per-IP rate limits (Workers Rate Limiting, wrangler >= 4.36).
+[[ratelimits]]
+name = "BURST_LIMITER"
+namespace_id = "7101"
+  [ratelimits.simple]
+  limit = 4
+  period = 10
+
+[[ratelimits]]
+name = "MINUTE_LIMITER"
+namespace_id = "7102"
+  [ratelimits.simple]
+  limit = 12
+  period = 60
+
+# Daily cap counter. Create it with `npx wrangler kv namespace create USAGE`, then paste the id here
+# and uncomment. Without it, the daily cap is skipped (per-IP limits still apply).
+# [[kv_namespaces]]
+# binding = "USAGE"
+# id = "<your-kv-namespace-id>"
+
+[observability]
+enabled = true

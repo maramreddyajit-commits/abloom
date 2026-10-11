@@ -1,71 +1,71 @@
 # 🌱 Abloom
 
-**A gentle companion app for people with OCD — resist a compulsion, water your plant, watch it grow.**
+A gentle companion app for people with OCD: resist a compulsion, water your plant, watch it grow.
 
-Abloom turns the hardest part of OCD recovery — *not* doing the compulsion — into something you can see. Every time you resist, you water a hand-drawn plant. Keep a daily streak and it grows from a seedling into full bloom; finish a tree and it joins your forest. No clipboards, no clinical language.
+Abloom makes the hardest part of OCD recovery, *not* doing the compulsion, into something you can see. When an urge hits you can resist it, delay it, or shrink the ritual. Any of these waters a hand-drawn plant that grows over the days you practise. The plant never wilts, and there are no streaks to lose.
 
-<p align="center">
-  <img src="docs/screenshots/welcome.png" width="200" alt="Welcome screen" />
-  <img src="docs/screenshots/grow.png" width="200" alt="Grow screen with plant, streak and compulsions" />
-  <img src="docs/screenshots/journey.png" width="200" alt="Journey screen with calendar and insights" />
-  <img src="docs/screenshots/struggling.png" width="200" alt="I'm struggling support sheet" />
+<p>
+<img src="docs/screenshots/welcome.png" width="200" alt="Welcome screen">
+<img src="docs/screenshots/grow.png" width="200" alt="Grow screen">
+<img src="docs/screenshots/urge.png" width="200" alt="Resist, delay or shrink">
+<img src="docs/screenshots/practice.png" width="200" alt="Exposure ladder">
 </p>
 
-## Features
-
-- **Track what your OCD looks like** — search 16 common compulsions across checking, contamination, reassurance-seeking, mental rituals, symmetry and avoidance, or add your own.
-- **Water your plant** — log each compulsion you resist. A daily streak grows the plant through five stages (Seedling → Tiny Sapling → Bigger Sapling → Young Tree → Full Bloom), with animations and haptic feedback.
-- **"I'm struggling" support** — when an urge hits: a paced breathing exercise, 5-4-3-2-1 grounding, and an urge timer to ride the wave out.
-- **Exposure practice (ERP)** — guided exposure and response prevention sessions: pick a trigger, rate anxiety before, during and after, and record whether the feared outcome happened.
-- **Journey** — a 35-day activity calendar, a breakdown of what you resist most, and a history of exposure sessions with before/after anxiety.
-- **AI companion** — a Claude-powered chat that helps you name compulsions and spot cognitive distortions (catastrophizing, thought-action fusion, intolerance of uncertainty…). It's deliberately designed to **never give reassurance**, since reassurance-seeking is itself a compulsion.
-- **Private by default** — all data stays on the device (AsyncStorage). No accounts.
-
-## Design decisions
-
-- **Recovery-informed, not clinical.** Copy is warm and lowercase; encouragement focuses on tolerating discomfort rather than on the fear being "irrational", in line with how ERP works.
-- **The tracker shouldn't become a ritual.** After eight logs in one day, the app gently reminds the user that it's a tool, not a ritual, and that they don't need to track perfectly — so logging itself doesn't turn into a compulsion.
-- **No API keys in the app.** The AI companion calls a tiny serverless proxy (`server/ai-proxy`) that holds the key and enforces the system prompt and message limits, so the endpoint can't be reused as a general-purpose Claude proxy.
-- **Local-calendar dates.** Streaks are computed from the user's local date, so "today" doesn't roll over early in the evening for users west of UTC.
-
-## Tech stack
+## What's inside
 
 | | |
 |---|---|
-| App | React Native 0.81 · Expo SDK 54 (New Architecture) · React 19 |
-| UI | React Native `Animated`, `expo-linear-gradient`, `expo-haptics`, Caveat & Coming Soon fonts, custom illustrated plant stages |
-| Storage | `@react-native-async-storage/async-storage` |
-| AI | Claude API via a Cloudflare Worker proxy |
-| Platforms | iOS, Android, Web |
+| **i have an urge** | The core loop. Name the urge, rate it, then choose **resist**, **delay** (5–30 min) or **shrink**. Ride it out with a timer and uncertainty-tolerance prompts, re-rate it, then water the plant. Partial wins count. Slips are noted kindly and don't water. |
+| **Quick log** | Log an urge you already handled in one tap, with undo. |
+| **Practice** | An exposure ladder rated 0–10, starter ideas matched to your compulsion types, and guided exposures (prediction → before, during and after anxiety → what you learned). |
+| **Learn** | Seven one-minute lessons, one unlocking each day: the OCD loop, hidden compulsions, reassurance, exposure, uncertainty, thoughts vs. actions, slips. |
+| **Journey** | A 5-week calendar, how you meet urges, urge strength before and after, time of day, top compulsions, exposure history, your forest, and a summary to share with a therapist. |
+| **Talk** | An optional Claude-powered companion that names compulsions and thinking traps and is built to **never give reassurance**. Consent-gated, with crisis detection, a report button, and a gentle pause for long chats. |
+| **I'm struggling** | Ride the urge, breathing, 5-4-3-2-1 grounding, and crisis lines (988, Crisis Text Line, Samaritans, findahelpline). |
+| **You** | Your plant, your compulsions, a daily reminder (optional, no badges), calm mode (hides all numbers), AI and analytics toggles, backup and restore, delete everything. |
+
+## Design principles
+- **Recovery-informed, not clinical.** Copy is warm and lowercase. We praise the *choice*, never promise a fear won't come true, and never reassure.
+- **No punishment.** Growth counts *water days*, so a missed day pauses growth and never undoes it. Streak counters and badges can feed OCD (JMIR 2026), so the home screen has neither.
+- **The tracker shouldn't become a ritual.** Several waterings in a day still count as one water day. After eight logs in a day, a gentle nudge says it's a tool, not a ritual. Calm mode hides numbers entirely.
+- **Private by default.** All app data stays on the device. No accounts. Analytics are opt-in and never include what you log.
+- **No API keys in the app.** The companion talks to a small Cloudflare Worker that holds the key and enforces the system prompt, safety handling and rate limits.
+
+See `docs/product-research.md` for the evidence behind these.
+
+## Tech
+React Native 0.81 · Expo SDK 54 · React 19 · AsyncStorage · Ionicons · Caveat + Nunito · Cloudflare Worker + Claude API. Runs on iOS, Android and web.
+
+```
+App.js                    fonts, splash, error boundary
+src/AbloomApp.js          providers + tab shell
+src/theme.js              design tokens (colour, type, spacing)
+src/content/              copy, compulsions, lessons, exposure ideas, crisis resources
+src/lib/model.js          data model, migrations, growth + insights (pure, tested)
+src/lib/                  storage, analytics, notifications, AI client, sharing, haptics
+src/state/store.js        app state + actions
+src/components/           UI kit, plant, toast, crisis card, picker
+src/flows/                urge flow, exposure flow, support, lessons, reminders (sheets)
+src/screens/              onboarding, grow, practice, journey, talk, you
+server/ai-proxy/          Cloudflare Worker for the AI companion
+test/                     node:test unit tests
+docs/                     launch checklist, store listing, ad copy, research
+```
 
 ## Running it
-
-```bash
+```
 npm install
-npx expo start        # then press i (iOS), a (Android) or w (web)
+npx expo start          # i = iOS, a = Android, w = web
+npm test                # data model + AI proxy tests
 ```
 
-The app works fully without the AI companion. To enable it:
-
-1. Deploy the proxy:
-   ```bash
-   cd server/ai-proxy
-   npx wrangler secret put ANTHROPIC_API_KEY
-   npx wrangler deploy
-   ```
-2. Copy `.env.example` to `.env` and set `EXPO_PUBLIC_AI_PROXY_URL` to the deployed worker URL.
-3. Restart `npx expo start`.
-
-## Project structure
-
+The app works fully without the AI companion. To turn it on, deploy the proxy, then set `.env`:
 ```
-App.js                 font loading + app root
-src/AbloomApp.js       screens, components and app state
-assets/images/         hand-drawn plant stages and flower art
-server/ai-proxy/       Cloudflare Worker that proxies the AI companion
-docs/screenshots/      README images
+cd server/ai-proxy
+npx wrangler secret put ANTHROPIC_API_KEY
+npx wrangler deploy
 ```
+Copy `.env.example` to `.env`, set `EXPO_PUBLIC_AI_PROXY_URL`, and restart Expo. The full launch steps are in [`docs/launch-checklist.md`](docs/launch-checklist.md).
 
 ## A note on scope
-
-Abloom is a personal project and a support tool, not a medical device or a substitute for treatment. If OCD is affecting your life, an ERP-trained therapist is the gold standard — the [International OCD Foundation](https://iocdf.org/find-help/) has a directory.
+Abloom is a self-help tool, not a medical device or a substitute for treatment. If OCD is affecting your life, an ERP-trained therapist is the gold standard. The [International OCD Foundation](https://iocdf.org/find-help/) has a directory.
